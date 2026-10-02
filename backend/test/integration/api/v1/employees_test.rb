@@ -5,15 +5,19 @@ class Api::V1::EmployeesTest < ActionDispatch::IntegrationTest
     @employee = employees(:john)
   end
 
-  test "returns all employees" do
+  test "returns paginated employees" do
     get "/api/v1/employees"
 
     assert_response :success
 
     body = JSON.parse(response.body)
 
-    assert_kind_of Array, body
-    assert body.any? { |employee| employee["id"] == @employee.id }
+    assert_kind_of Array, body["data"]
+    assert body["data"].any? { |employee| employee["id"] == @employee.id }
+
+    assert_equal 1, body["meta"]["current_page"]
+    assert_equal 20, body["meta"]["per_page"]
+    assert body["meta"]["total_count"].positive?
   end
 
   test "returns a single employee" do
@@ -106,4 +110,37 @@ class Api::V1::EmployeesTest < ActionDispatch::IntegrationTest
 
     assert_response :no_content
   end
+  
+  test "supports pagination" do
+    get "/api/v1/employees",
+        params: {
+          page: 1,
+          per_page: 1
+        }
+
+    assert_response :success
+
+    body = JSON.parse(response.body)
+
+    assert_equal 1, body["data"].length
+    assert_equal 1, body["meta"]["current_page"]
+    assert_equal 1, body["meta"]["per_page"]
+    assert body["meta"]["total_pages"] >= 2
+  end
+
+  test "filters employees by department" do
+    get "/api/v1/employees",
+        params: {
+          department: "Engineering"
+        }
+
+    assert_response :success
+
+    body = JSON.parse(response.body)
+
+    assert body["data"].all? do |employee|
+      employee["department"] == "Engineering"
+    end
+  end
+
 end

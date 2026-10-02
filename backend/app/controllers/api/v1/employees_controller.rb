@@ -5,9 +5,30 @@ module Api
 
       # GET /api/v1/employees
       def index
-        employees = Employee.order(created_at: :desc)
+        employees = EmployeeQuery.new(Employee.all, params).call
 
-        render json: employees, status: :ok
+        page = params.fetch(:page, 1).to_i
+        per_page = params.fetch(:per_page, 20).to_i
+
+        page = 1 if page < 1
+        per_page = 20 unless per_page.between?(1, 100)
+
+        total_count = employees.count
+        total_pages = (total_count.to_f / per_page).ceil
+
+        employees = employees
+                      .offset((page - 1) * per_page)
+                      .limit(per_page)
+
+        render json: {
+          data: employees,
+          meta: {
+            current_page: page,
+            per_page: per_page,
+            total_count: total_count,
+            total_pages: total_pages
+          }
+        }, status: :ok
       end
 
       # GET /api/v1/employees/:id
