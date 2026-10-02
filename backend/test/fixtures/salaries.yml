@@ -1,0 +1,13 @@
+one:
+  employee: john
+  base_salary: 75000.00
+  bonus: 5000.00
+  currency: USD
+  effective_from: 2025-01-01
+
+two:
+  employee: jane
+  base_salary: 900000.00
+  bonus: 100000.00
+  currency: INR
+  effective_from: 2025-01-01

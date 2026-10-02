@@ -1,4 +1,6 @@
 class Employee < ApplicationRecord
+  has_many :salaries, dependent: :destroy
+
   validates :employee_code, presence: true, uniqueness: { case_sensitive: false }
 
   validates :first_name,
@@ -19,6 +21,10 @@ class Employee < ApplicationRecord
 
   before_validation :normalize_email
   before_validation :normalize_employee_code
+
+  def current_salary
+    salaries.recent_first.first
+  end
 
   private
 
