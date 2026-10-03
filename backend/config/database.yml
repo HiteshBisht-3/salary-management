@@ -1,5 +1,3 @@
-# PostgreSQL configuration
-
 default: &default
   adapter: postgresql
   encoding: unicode
@@ -20,5 +18,11 @@ test:
   password: <%= ENV["DB_PASSWORD"] %>
 
 production:
-  <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
+  primary:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+
+  cable:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+    database_tasks: false
