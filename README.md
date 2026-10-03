@@ -59,3 +59,6 @@ rails db:create
 rails db:migrate
 rails db:seed
 rails server
+
+### Demo Video
+https://drive.google.com/file/d/1FF2qn3nxrT5_XP89HzOFG8uMksiu-W2A/view?usp=sharing
